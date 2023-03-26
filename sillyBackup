@@ -1,0 +1,123 @@
+#!/bin/bash
+
+set -u
+
+#
+# Robert Brockway
+#
+# 25 February 2023
+#
+# $1: Hostname
+# $2: Filesystem
+# $3: Bucket
+#
+
+#
+# Functions
+#
+
+error()
+{
+	echo "Error: $1"
+	logger "Error: $1"
+
+	exit $1
+}
+
+initialise()
+{
+	AWSBIN=/usr/bin/s3cmd
+	AWSCFG=~/.s3cfg
+
+	command -v $AWSBIN &> /dev/null
+	case $? in
+	0)
+		true
+		;;
+	*)
+		error 40
+		;;
+	esac
+
+	if [ -f $AWSCFG ]
+	then
+		true
+	else
+		error 45
+	fi
+
+	APPNAME="$(basename $0)"
+
+	STAGING=/srv/staging
+
+	TIMESTAMP=$(date +%s)
+
+	TARFILE=$STAGING/$HOST.$FILESYSTEM.$TIMESTAMP.$$.tar
+
+	echo "Backing up filesystem /$FILESYSTEM on $HOST"
+}
+
+backupToS3()
+{
+	echo "Backing up to S3"
+	s3cmd put $TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
+	case $? in
+	0)
+		rm -f $TARFILE
+		;;
+	*)
+		error 60
+		;;
+	esac
+}
+
+remoteBackup()
+{
+	echo "Creating tar file"
+        ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $TARFILE 2> /dev/null
+	# Certain errors are ok
+	# Once I have that nailed down I can re-enable this
+        #case $? in
+        #0)
+        #        true
+        #        ;;
+        #*)
+        #        error 50
+        #        ;;
+        #esac
+}
+
+#
+# Main
+#
+
+case ${1-""} in
+	"")
+	        error 11
+		;;
+	*)
+		HOST=$1
+		;;
+esac
+
+case ${1-""} in
+	"")
+	        error 12
+		;;
+	*)
+		FILESYSTEM=$2
+		;;
+esac
+
+case ${1-""} in
+	"")
+	        error 13
+		;;
+	*)
+		BUCKET=$3
+		;;
+esac
+
+initialise
+remoteBackup
+backupToS3
