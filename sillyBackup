@@ -52,7 +52,7 @@ initialise()
 
 	TIMESTAMP=$(date +%s)
 
-	TARFILE=$STAGING/$HOST.$FILESYSTEM.$TIMESTAMP.$$.tar
+	TARFILE=$HOST.$FILESYSTEM.$TIMESTAMP.$$.tar
 
 	echo "Backing up filesystem /$FILESYSTEM on $HOST"
 }
@@ -60,10 +60,10 @@ initialise()
 backupToS3()
 {
 	echo "Backing up to S3"
-	s3cmd put $TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
+	s3cmd put $STAGING/$TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
 	case $? in
 	0)
-		rm -f $TARFILE
+		rm -f $STAGING/$TARFILE
 		;;
 	*)
 		error 60
@@ -74,7 +74,7 @@ backupToS3()
 remoteBackup()
 {
 	echo "Creating tar file"
-        ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $TARFILE 2> /dev/null
+        ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $STAGING/$TARFILE 2> /dev/null
 	# Certain errors are ok
 	# Once I have that nailed down I can re-enable this
         #case $? in
@@ -85,6 +85,12 @@ remoteBackup()
         #        error 50
         #        ;;
         #esac
+}
+
+splitBackup()
+{
+	echo "Splitting far file"
+	split -b 10G $STAGING/$TARFILE $TARFILE.
 }
 
 #
