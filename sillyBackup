@@ -66,7 +66,7 @@ backupToS3()
 		rm -f $STAGING/$TARFILE
 		;;
 	*)
-		error 60
+		error 90
 		;;
 	esac
 }
@@ -89,8 +89,19 @@ remoteBackup()
 
 splitBackup()
 {
-	echo "Splitting far file"
-	split -b 10G $STAGING/$TARFILE $TARFILE.
+	echo "Splitting tar file"
+	if [ -f $STAGING/$TARFILE ]
+	then
+		split -b 10G $STAGING/$TARFILE $TARFILE.
+		case $? in
+		0)
+			true
+			;;
+		*)
+			error 70
+			;;
+		esac
+	fi
 }
 
 #
