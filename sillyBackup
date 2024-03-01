@@ -110,25 +110,25 @@ splitBackup()
 
 case ${1-""} in
 	"")
-	        error 11
+        error 11
 		;;
 	*)
 		HOST=$1
 		;;
 esac
 
-case ${1-""} in
+case ${2-""} in
 	"")
-	        error 12
+        error 12
 		;;
 	*)
 		FILESYSTEM=$2
 		;;
 esac
 
-case ${1-""} in
+case ${3-""} in
 	"")
-	        error 13
+        error 13
 		;;
 	*)
 		BUCKET=$3
