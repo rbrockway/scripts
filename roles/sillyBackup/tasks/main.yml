@@ -19,5 +19,5 @@
     user: root
     name: sillyBackup
     hour: "20"
-    minute: "*/20+5"
+    minute: "*/20+10"
     job: "/usr/local/sbin/ansiblePull rbrockway scripts sillyBackup"
