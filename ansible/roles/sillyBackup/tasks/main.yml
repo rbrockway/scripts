@@ -1,0 +1,8 @@
+- name: Copy /usr/local/bin/sillyBackup
+  copy:           
+    src: sillyBackup
+    dest: /usr/local/bin/sillyBackup
+    owner: root
+    group: root
+    mode: 0755
+
