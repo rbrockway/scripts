@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -u
-
 #
 # Robert Brockway
 #
@@ -26,17 +24,29 @@ error()
 
 initialise()
 {
+	set -u
+
 	AWSBIN=/usr/bin/s3cmd
 	AWSCFG=~/.s3cfg
 
-	command -v $AWSBIN &> /dev/null
-	case $? in
-	0)
+	case $S3 in
+	yes)
+		command -v $AWSBIN &> /dev/null
+		case $? in
+		0)
+			true
+			;;
+		*)
+			error 40
+			;;
+		esac
+		;;
+	no)
 		true
 		;;
 	*)
-		error 40
-		;;
+		# This shouldn't happen
+		error 42
 	esac
 
 	if [ -f $AWSCFG ]
@@ -48,13 +58,11 @@ initialise()
 
 	APPNAME="$(basename $0)"
 
-	STAGING=/srv/staging
+	BACKUPDIR=/srv/backups/filesystems
 
 	TIMESTAMP=$(date +%s)
 
 	TARFILE=$HOST.$FILESYSTEM.$TIMESTAMP.$$.tar
-
-	echo "Backing up filesystem /$FILESYSTEM on $HOST"
 }
 
 backupToS3()
@@ -62,10 +70,10 @@ backupToS3()
 	case $S3 in
 	yes)
 		echo "Backing up to S3"
-		s3cmd put $STAGING/$TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
+		s3cmd put $BACKUPDIR/$TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
 		case $? in
 		0)
-			rm -f $STAGING/$TARFILE
+			rm -f $BACKUPDIR/$TARFILE
 			;;
 		*)
 			error 90
@@ -84,8 +92,10 @@ backupToS3()
 
 remoteBackup()
 {
+	echo "Backing up filesystem /$FILESYSTEM on $HOST"
+	echo
 	echo "Creating tar file"
-    ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $STAGING/$TARFILE 2> /dev/null
+    ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $BACKUPDIR/$TARFILE 2> /dev/null
 	# Certain errors are ok
 	# Once I have that nailed down I can re-enable this
         #case $? in
@@ -101,9 +111,9 @@ remoteBackup()
 splitBackup()
 {
 	echo "Splitting tar file"
-	if [ -f $STAGING/$TARFILE ]
+	if [ -f $BACKUPDIR/$TARFILE ]
 	then
-		split -b 10G $STAGING/$TARFILE $TARFILE.
+		split -b 10G $BACKUPDIR/$TARFILE $TARFILE.
 		case $? in
 		0)
 			true
@@ -119,7 +129,7 @@ splitBackup()
 # Main
 #
 
-case ${1-""} in
+case $1 in
 	"")
         error 11
 		;;
@@ -128,7 +138,7 @@ case ${1-""} in
 		;;
 esac
 
-case ${2-""} in
+case $2 in
 	"")
         error 12
 		;;
@@ -137,7 +147,7 @@ case ${2-""} in
 		;;
 esac
 
-case ${3-""} in
+case $3 in
 	"")
         BUCKET=""
 		S3=no
