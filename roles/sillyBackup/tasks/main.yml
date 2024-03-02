@@ -1,3 +1,7 @@
+###########
+# Scripts #
+###########
+
 - name: Copy /usr/local/bin/sillyBackup
   copy:           
     src: sillyBackup
@@ -6,3 +10,14 @@
     group: root
     mode: 0755
 
+########
+# Cron #
+########
+
+- name: Run ansiblePull
+  ansible.builtin.cron:
+    user: root
+    name: ansiblePull
+    hour: "*"
+    minute: "*/20"
+    job: "/usr/local/sbin/ansiblePull rbrockway scripts sillyBackup"
