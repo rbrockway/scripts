@@ -14,10 +14,10 @@
 # Cron #
 ########
 
-- name: Run ansiblePull
+- name: Run sillyBackup
   ansible.builtin.cron:
     user: root
-    name: ansiblePull
-    hour: "*"
-    minute: "*/20"
+    name: sillyBackup
+    hour: "17"
+    minute: "17"
     job: "/usr/local/sbin/ansiblePull rbrockway scripts sillyBackup"
