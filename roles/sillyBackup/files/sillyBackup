@@ -40,6 +40,13 @@ initialise()
 			error 40
 			;;
 		esac
+
+		if [ -f $AWSCFG ]
+		then
+			true
+		else
+			error 45
+		fi
 		;;
 	no)
 		true
@@ -48,13 +55,6 @@ initialise()
 		# This shouldn't happen
 		error 42
 	esac
-
-	if [ -f $AWSCFG ]
-	then
-		true
-	else
-		error 45
-	fi
 
 	APPNAME="$(basename $0)"
 
