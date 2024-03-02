@@ -59,14 +59,25 @@ initialise()
 
 backupToS3()
 {
-	echo "Backing up to S3"
-	s3cmd put $STAGING/$TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
-	case $? in
-	0)
-		rm -f $STAGING/$TARFILE
+	case $S3 in
+	yes)
+		echo "Backing up to S3"
+		s3cmd put $STAGING/$TARFILE s3://$BUCKET/$HOST/$FILESYSTEM/ &> /dev/null
+		case $? in
+		0)
+			rm -f $STAGING/$TARFILE
+			;;
+		*)
+			error 90
+			;;
+		esac
+		;;
+	no)
+		echo "No bucket specified so not backing up to S3"
 		;;
 	*)
-		error 90
+		# This shouldn't happen
+		error 95
 		;;
 	esac
 }
@@ -74,7 +85,7 @@ backupToS3()
 remoteBackup()
 {
 	echo "Creating tar file"
-        ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $STAGING/$TARFILE 2> /dev/null
+    ssh root@$HOST tar --warning=no-file-changed -cf - /$FILESYSTEM > $STAGING/$TARFILE 2> /dev/null
 	# Certain errors are ok
 	# Once I have that nailed down I can re-enable this
         #case $? in
@@ -128,10 +139,12 @@ esac
 
 case ${3-""} in
 	"")
-        error 13
+        BUCKET=""
+		S3=no
 		;;
 	*)
 		BUCKET=$3
+		S3=yes
 		;;
 esac
 
