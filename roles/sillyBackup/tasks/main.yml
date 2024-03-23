@@ -10,6 +10,14 @@
     group: root
     mode: 0755
 
+- name: Copy /usr/local/bin/sillyBackupAll
+  copy:           
+    src: sillyBackup
+    dest: /usr/local/bin/sillyBackupAll
+    owner: root
+    group: root
+    mode: 0755
+
 ########
 # Cron #
 ########
