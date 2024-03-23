@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#
+# Robert Brockway
+#
+# 7 March 2023
+#
+# $1: Optional host
+# $2: Optional filesystem
+#
+
+#
+# Config
+#
+
+BUCKET=avfmbackup
+HOSTLIST="admin.avoiceformen.com int.avoiceformen.com mon.avoiceformen.com prod.avoiceformen.com"
+FSLIST="bin boot dev etc home lib lib64 opt root srv usr var"
+
+#
+# Functions
+#
+
+backupAll()
+{
+	for I in $HOSTLIST
+	do
+		backupOneHost $I
+	done
+}
+
+backupOneFilesystem()
+{
+	HOST=$1
+	FILESYSTEM=$2
+	sssBackup $HOST $FILESYSTEM $BUCKET
+
+}
+
+backupOneHost()
+{
+	HOST=$1
+	for J in $FSLIST
+	do
+		backupOneFilesystem $HOST $J
+	done
+}
+
+#
+# Main
+#
+
+case ${1-""} in
+"")
+	backupAll
+	;;
+*)
+	case ${2-""} in
+	"")
+		backupOneHost $1
+		;;
+	*)
+		backupOneFilesystem $1 $2
+		;;
+	esac
+	;;
+esac
