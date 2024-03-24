@@ -12,7 +12,7 @@
 
 - name: Copy /usr/local/bin/sillyBackupAll
   copy:           
-    src: sillyBackup
+    src: sillyBackupAll
     dest: /usr/local/bin/sillyBackupAll
     owner: root
     group: root
