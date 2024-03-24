@@ -33,7 +33,8 @@ backupOneFilesystem()
 {
 	HOST=$1
 	FILESYSTEM=$2
-	sillyBackup $HOST $FILESYSTEM $BUCKET
+	#sillyBackup $HOST $FILESYSTEM $BUCKET
+	sillyBackup $HOST $FILESYSTEM
 
 }
 
