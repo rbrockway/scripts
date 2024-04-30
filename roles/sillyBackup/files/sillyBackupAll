@@ -14,7 +14,7 @@
 #
 
 BUCKET=avfmbackup
-HOSTLIST="admin.avoiceformen.com int.avoiceformen.com mon.avoiceformen.com prod.avoiceformen.com"
+HOSTLIST="castor.opentrend.net pollux.opentrend.net sirius.opentrend.net admin.avoiceformen.com int.avoiceformen.com mon.avoiceformen.com prod.avoiceformen.com"
 FSLIST="bin boot dev etc home lib lib64 opt root srv usr var"
 
 #
