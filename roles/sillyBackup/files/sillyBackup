@@ -24,6 +24,7 @@ error()
 
 initialise()
 {
+	# Treat unset variables as an error when substituting.
 	set -u
 
 	AWSBIN=/usr/bin/s3cmd
@@ -105,8 +106,7 @@ backupToS3()
 remoteBackup()
 {
 	echo "Backing up filesystem /$DIRECTORY on $HOST"
-	echo
-	echo "Creating tar file"
+	echo "Creating tar file $TARFILE"
     ssh root@$HOST tar --warning=no-file-changed -cf - /$DIRECTORY > $BACKUPDIR/$TARFILE 2> /dev/null
 	# Certain errors are ok
 	# Once I have that nailed down I can re-enable this
