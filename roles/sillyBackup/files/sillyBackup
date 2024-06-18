@@ -50,7 +50,7 @@ initialise()
 		fi
 		;;
 	no)
-		echo "S3 not in use"
+		true
 		;;
 	*)
 		# This shouldn't happen
