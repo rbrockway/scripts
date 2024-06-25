@@ -31,7 +31,7 @@ initialise()
 	AWSCFG=~/.s3cfg
 
 	# Files older than this many days will be deleted
-	DAYS=60
+	DAYS=45
 
 	case $S3 in
 	yes)
