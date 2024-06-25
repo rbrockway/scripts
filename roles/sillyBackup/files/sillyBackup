@@ -30,6 +30,9 @@ initialise()
 	AWSBIN=/usr/bin/s3cmd
 	AWSCFG=~/.s3cfg
 
+	# Files older than this many days will be deleted
+	DAYS=60
+
 	case $S3 in
 	yes)
 		command -v $AWSBIN &> /dev/null
@@ -72,9 +75,6 @@ initialise()
 		error 10
 		;;
 	esac
-
-	# Files older than this many days will be deleted
-	DAYS=89
 
 	TIMESTAMP=$(date +%s)
 
