@@ -108,11 +108,11 @@ backupToS3()
 
 cleanOld()
 {
-	echo "Deleting files over $DAYS days old"
+	echo "Deleting backup files over $DAYS days old"
 	find $BACKUPROOT -type f -mtime +$DAYS -delete
 	case $? in
 	0)
-		echo "Delete of files over $DAYS days old successful"
+		echo "Delete of backup files over $DAYS days old successful"
 		;;
 	*)
 		error 20
