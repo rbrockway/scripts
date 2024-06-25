@@ -59,7 +59,7 @@ initialise()
 
 	APPNAME="$(basename $0)"
 
-	BACKUPROOT=/srv/fs1/avfmbkupabackups/filesystems
+	BACKUPROOT=/srv/fs1/avfmbkup/backups/filesystems
 
 	BACKUPDIR=$BACKUPROOT/$HOST/$DIRECTORY
 
