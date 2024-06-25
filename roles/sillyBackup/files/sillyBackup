@@ -115,7 +115,7 @@ cleanOld()
 		echo "Delete of files over $DAYS days old successful"
 		;;
 	*)
-		error 100
+		error 20
 		;;
 	esac
 }
@@ -188,6 +188,6 @@ case $3 in
 esac
 
 initialise
+cleanOld
 remoteBackup
 backupToS3
-cleanOld
