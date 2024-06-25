@@ -14,6 +14,45 @@
 # Functions
 #
 
+backupToS3()
+{
+	case $S3 in
+	yes)
+		echo "Backing up to S3"
+		s3cmd put $BACKUPDIR/$TARFILE s3://$BUCKET/$HOST/$DIRECTORY/ &> /dev/null
+		case $? in
+		0)
+			rm -f $BACKUPDIR/$TARFILE
+			;;
+		*)
+			error 90
+			;;
+		esac
+		;;
+	no)
+		echo "No bucket specified so not backing up to S3"
+		;;
+	*)
+		# This shouldn't happen
+		error 95
+		;;
+	esac
+}
+
+cleanOld()
+{
+	echo "Deleting backup files over $DAYS days old"
+	find $BACKUPROOT -mtime +$DAYS -delete
+	case $? in
+	0)
+		echo "Delete of backup files over $DAYS days old successful"
+		;;
+	*)
+		error 20
+		;;
+	esac
+}
+
 error()
 {
 	echo "Error: $1"
@@ -79,45 +118,6 @@ initialise()
 	TIMESTAMP=$(date +%s)
 
 	TARFILE=$HOST.$DIRECTORY.$TIMESTAMP.$$.tar
-}
-
-backupToS3()
-{
-	case $S3 in
-	yes)
-		echo "Backing up to S3"
-		s3cmd put $BACKUPDIR/$TARFILE s3://$BUCKET/$HOST/$DIRECTORY/ &> /dev/null
-		case $? in
-		0)
-			rm -f $BACKUPDIR/$TARFILE
-			;;
-		*)
-			error 90
-			;;
-		esac
-		;;
-	no)
-		echo "No bucket specified so not backing up to S3"
-		;;
-	*)
-		# This shouldn't happen
-		error 95
-		;;
-	esac
-}
-
-cleanOld()
-{
-	echo "Deleting backup files over $DAYS days old"
-	find $BACKUPROOT -type f -mtime +$DAYS -delete
-	case $? in
-	0)
-		echo "Delete of backup files over $DAYS days old successful"
-		;;
-	*)
-		error 20
-		;;
-	esac
 }
 
 remoteBackup()
