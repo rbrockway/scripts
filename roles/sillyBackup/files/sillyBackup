@@ -59,7 +59,7 @@ initialise()
 
 	APPNAME="$(basename $0)"
 
-	BACKUPROOT=/srv/backups/filesystems
+	BACKUPROOT=/srv/fs1/avfmbkupabackups/filesystems
 
 	BACKUPDIR=$BACKUPROOT/$HOST/$DIRECTORY
 
@@ -72,6 +72,9 @@ initialise()
 		error 10
 		;;
 	esac
+
+	# Files older than this many days will be deleted
+	DAYS=89
 
 	TIMESTAMP=$(date +%s)
 
@@ -99,6 +102,20 @@ backupToS3()
 	*)
 		# This shouldn't happen
 		error 95
+		;;
+	esac
+}
+
+cleanOld()
+{
+	echo "Deleting files over $DAYS days old"
+	find $BACKUPROOT -type f -mtime +$DAYS -delete
+	case $? in
+	0)
+		echo "Delete of files over $DAYS days old successful"
+		;;
+	*)
+		error 100
 		;;
 	esac
 }
@@ -173,3 +190,4 @@ esac
 initialise
 remoteBackup
 backupToS3
+cleanOld
