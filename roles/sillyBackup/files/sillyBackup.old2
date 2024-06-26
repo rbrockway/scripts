@@ -53,20 +53,6 @@ cleanOld()
 	esac
 }
 
-compressBackup()
-{
-	echo "Compressing $TARFILE"
-	zstd --rm $TARFILE &> /dev/null
-	case $? in
-	0)
-		echo "Backup $TARFILE successfully compressed"
-		;;
-	*)
-		error 80
-		;;
-	esac
-}
-
 error()
 {
 	echo "Error: $1"
@@ -204,5 +190,4 @@ esac
 initialise
 cleanOld
 remoteBackup
-compressBackup
 backupToS3
