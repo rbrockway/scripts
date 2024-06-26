@@ -39,30 +39,16 @@ backupToS3()
 	esac
 }
 
-cleanEmpty()
-{
-	echo "Deleting empty backup directories"
-	find $BACKUPROOT -type d -empty -delete
-	case $? in
-	0)
-		echo "Delete of empty directories successful"
-		;;
-	*)
-		error 30
-		;;
-	esac
-}
-
 cleanOld()
 {
 	echo "Deleting backup files over $DAYS days old"
-	find $BACKUPROOT -type f -mtime +$DAYS -delete
+	find $BACKUPROOT -mtime +$DAYS -delete
 	case $? in
 	0)
 		echo "Delete of backup files over $DAYS days old successful"
 		;;
 	*)
-		error 30
+		error 20
 		;;
 	esac
 }
@@ -224,7 +210,6 @@ case $3 in
 esac
 
 initialise
-cleanEmpty
 cleanOld
 remoteBackup
 compressBackup
