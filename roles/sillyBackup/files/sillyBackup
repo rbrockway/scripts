@@ -70,7 +70,7 @@ cleanOld()
 compressBackup()
 {
 	echo "Compressing $TARFILE"
-	zstd --rm $TARFILE &> /dev/null
+	zstd --rm $BACKUPDIR/$TARFILE &> /dev/null
 	case $? in
 	0)
 		echo "Backup $TARFILE successfully compressed"
