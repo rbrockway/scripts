@@ -86,24 +86,18 @@ initialise()
 	# Files older than this many days will be deleted
 	DAYS=45
 
+	COMMANDS="zstd"
+
 	case $S3 in
 	yes)
-		command -v $AWSBIN &> /dev/null
-		case $? in
-		0)
-			true
-			;;
-		*)
-			error 40
-			;;
-		esac
-
 		if [ -f $AWSCFG ]
 		then
 			true
 		else
-			error 45
+			error 40
 		fi
+
+		COMMANDS="$COMMANDS $AWSBIN"
 		;;
 	no)
 		true
@@ -112,6 +106,20 @@ initialise()
 		# This shouldn't happen
 		error 42
 	esac
+
+	for I in $COMMANDS
+	do
+		command -v $I &> /dev/null
+		case $? in
+		0)
+			echo "Command $I found"
+			;;
+		*)
+			echo "Could not find command $I"
+			error 44
+			;;
+		esac
+	done
 
 	APPNAME="$(basename $0)"
 
@@ -125,7 +133,7 @@ initialise()
 		echo "Directory $BACKUPDIR available"
 		;;
 	*)
-		error 10
+		error 46
 		;;
 	esac
 
