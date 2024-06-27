@@ -224,8 +224,8 @@ case $3 in
 esac
 
 initialise
-cleanEmpty
 cleanOld
+cleanEmpty
 remoteBackup
 compressBackup
 backupToS3
