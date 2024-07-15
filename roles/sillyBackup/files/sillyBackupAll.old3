@@ -47,29 +47,20 @@ backupOneHost()
 	done
 }
 
-initialise()
-{
-	# Treat unset variables as an error when substituting.
-    set -u
-}
-
 #
 # Main
 #
 
-case $1 in
+case ${1-""} in
 "")
-	initialise
 	backupAll
 	;;
 *)
-	case $2 in
+	case ${2-""} in
 	"")
-		initialise
 		backupOneHost $1
 		;;
 	*)
-		initialise
 		backupOneFilesystem $1 $2
 		;;
 	esac
